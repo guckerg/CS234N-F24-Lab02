@@ -1,5 +1,6 @@
 ﻿using MMABooksBusinessClasses;
 using MySql.Data.MySqlClient;
+
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -13,7 +14,7 @@ namespace MMABooksDBClasses
         {
             MySqlConnection connection = MMABooksDB.GetConnection();
             string selectStatement
-                = "SELECT Description, ProductCode, OnHandQuantity, UnitPrice "
+                = "SELECT ProductCode, Description, OnHandQuantity, UnitPrice "
                 + "FROM Products "
                 + "WHERE ProductCode = @ProductCode";
             MySqlCommand selectCommand =
@@ -28,10 +29,12 @@ namespace MMABooksDBClasses
                 if (custReader.Read())
                 {
                     Product product = new Product();
-                    product.ProductCode = (string)custReader["ProductCode"];
-                    product.Description = (string)custReader["Description"];
-                    product.OnHandQuantity = Convert.ToInt32(custReader["OnHandQuantity"]);
-                    product.UnitPrice = Convert.ToDecimal(custReader["UnitPrice"]);
+                    product.ProductCode = custReader["ProductCode"].ToString();
+                    product.Description = custReader["Description"].ToString();
+                    product.OnHandQuantity = (int)custReader["OnHandQuantity"];
+                    product.UnitPrice = (decimal)custReader["UnitPrice"];
+
+                    custReader.Close();
                     return product;
                 }
                 else
@@ -54,29 +57,29 @@ namespace MMABooksDBClasses
             MySqlConnection connection = MMABooksDB.GetConnection();
             string insertStatement =
                 "INSERT Products " +
-                "(Description, ProductCode, OnHandQuantity, UnitPrice) " +
-                "VALUES (@Description, @ProductCode, @OnHandQuantity, @UnitPrice)";
+                "(ProductCode, Description, UnitPrice, OnHandQuantity) " +
+                "VALUES (@ProductCode, @Description, @UnitPrice, @OnHandQuantity)";
             MySqlCommand insertCommand =
                 new MySqlCommand(insertStatement, connection);
             insertCommand.Parameters.AddWithValue(
-                "@ProdutCode", product.ProductCode);
+                "@ProductCode", product.ProductCode);
             insertCommand.Parameters.AddWithValue(
                 "@Description", product.Description);
             insertCommand.Parameters.AddWithValue(
-                "@OnHandQuantity", product.OnHandQuantity);
-            insertCommand.Parameters.AddWithValue(
                 "@UnitPrice", product.UnitPrice);
+            insertCommand.Parameters.AddWithValue(
+                "@OnHandQuantity", product.OnHandQuantity);
             try
             {
                 connection.Open();
                 insertCommand.ExecuteNonQuery();
                 // MySQL specific code for getting last pk value
                 string selectStatement =
-                    "SELECT LAST_INSERT_ID()";
+                    "SELECT LAST_INSERT_ID()"; //THIS ALWAYS RETURNS 0, I DONT KNOW WHAT TO DO!
                 MySqlCommand selectCommand =
                     new MySqlCommand(selectStatement, connection);
-                string productCode = (string)selectCommand.ExecuteScalar();
-                return productCode;
+                object productCode = selectCommand.ExecuteScalar();
+                return productCode.ToString();
             }
             catch (MySqlException ex)
             {

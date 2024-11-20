@@ -1,9 +1,10 @@
-﻿using MMABooksBusinessClasses;
-using MMABooksDBClasses;
-using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+
+using NUnit.Framework;
+using MMABooksBusinessClasses;
+using MMABooksDBClasses;
 
 namespace MMABooksTests
 {
@@ -24,17 +25,45 @@ namespace MMABooksTests
         }
 
         [Test]
-        public void TestCreateProduct() /*TODO: fix error, not running*/
+        public void TestAddProduct()
         {
             Product p = new Product();
-            p.ProductCode = "Z9X8";
-            p.Description = "CS234N Study Guide";
-            p.OnHandQuantity = 123;
-            p.UnitPrice = 123.45m;
+            p.ProductCode = "ABC1";
+            p.Description = "testing product";
+            p.UnitPrice = 12.34m;
+            p.OnHandQuantity = 1234;
 
             string productCode = ProductDB.AddProduct(p);
             p = ProductDB.GetProduct(productCode);
-            Assert.AreEqual("Z9X8", p.ProductCode);
+            Assert.AreEqual("ABC1", p.ProductCode);
+        }
+
+        [Test]
+        public void TestUpdateProduct() //TODO: update copied method to UPDATE
+        {
+            Product p = new Product();
+            p.ProductCode = "ABC1";
+            p.Description = "testing product";
+            p.UnitPrice = 12.34m;
+            p.OnHandQuantity = 1234;
+
+            string productCode = ProductDB.AddProduct(p);
+            p = ProductDB.GetProduct(productCode);
+            Assert.AreEqual("ABC1", p.ProductCode);
+        }
+
+        [Test]
+        public void TestDeleteProduct()
+        {
+            Product p = new Product();
+            p.ProductCode = "ABC1";
+            p.Description = "testing product";
+            p.UnitPrice = 12.34m;
+            p.OnHandQuantity = 1234;
+
+            string productCode = ProductDB.AddProduct(p);
+            p = ProductDB.GetProduct(productCode);
+            Assert.AreEqual("ABC1", p.ProductCode);
         }
     }
 }

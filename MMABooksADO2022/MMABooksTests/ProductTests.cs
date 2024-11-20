@@ -18,7 +18,7 @@ namespace MMABooksTests
         public void SetUp()
         {
             def = new();
-            p = new("Descripton test", "A1B2", 150, 49.50m);
+            p = new("A1B2","Description Test", 150, 49.50m);
         }
 
         [Test]
@@ -28,13 +28,13 @@ namespace MMABooksTests
             Assert.AreEqual(null, def.ProductCode);
             Assert.AreEqual(null, def.Description);
             Assert.AreEqual(0, def.OnHandQuantity);
-            Assert.AreEqual(null, def.UnitPrice);
+            Assert.AreEqual(0m, def.UnitPrice);
 
             Assert.IsNotNull(p);
             Assert.AreEqual("Description test", p.Description);
             Assert.AreEqual("A1B2", p.ProductCode);
-            Assert.AreEqual("150", p.OnHandQuantity);
-            Assert.AreEqual("49.50", p.UnitPrice);
+            Assert.AreEqual(150, p.OnHandQuantity);
+            Assert.AreEqual(49.50m, p.UnitPrice);
         }
 
 

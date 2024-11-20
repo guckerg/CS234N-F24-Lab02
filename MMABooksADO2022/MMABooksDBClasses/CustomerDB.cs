@@ -10,7 +10,6 @@ namespace MMABooksDBClasses
 {
     public static class CustomerDB
     {
-
         public static Customer GetCustomer(int customerID)
         {
             MySqlConnection connection = MMABooksDB.GetConnection();
@@ -36,6 +35,8 @@ namespace MMABooksDBClasses
                     customer.City = custReader["City"].ToString();
                     customer.State = custReader["State"].ToString();
                     customer.ZipCode = custReader["ZipCode"].ToString();
+
+                    custReader.Close();
                     return customer;
                 }
                 else
