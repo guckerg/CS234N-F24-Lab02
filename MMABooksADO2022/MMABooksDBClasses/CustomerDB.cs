@@ -116,7 +116,8 @@ namespace MMABooksDBClasses
                 connection.Open();
                 // execute the command
                 MySqlDataReader reader = deleteCommand.ExecuteReader();
-                // if the number of records returned = 1, return true otherwise return false
+                // if the number of records returned = 1,
+                // return true; otherwise return false
                 if (reader.HasRows)
                 {
                     deleteCommand.ExecuteNonQuery();
@@ -139,11 +140,11 @@ namespace MMABooksDBClasses
             }
         }
 
-        public static bool UpdateCustomer(Customer oldCustomer,
-            Customer newCustomer)
+        public static bool UpdateCustomer(Customer oldCustomer, Customer newCustomer)
         {
             // create a connection
-            MySqlConnection connection = MMABooksDB.GetConnection();
+            MySqlConnection connection = 
+                MMABooksDB.GetConnection();
             string updateStatement =
                 "UPDATE Customers SET " +
                 "Name = @NewName, " +
@@ -158,24 +159,37 @@ namespace MMABooksDBClasses
                 "AND State = @OldState " +
                 "AND ZipCode = @OldZipCode";
             // setup the command object
-            MySqlCommand updateCommand =
+            MySqlCommand updateCommand = 
                 new MySqlCommand(updateStatement, connection);
+            updateCommand.Parameters.AddWithValue
+                ("@NewName", newCustomer.Name);
+            updateCommand.Parameters.AddWithValue
+                ("@NewAddress", newCustomer.Address);
+            updateCommand.Parameters.AddWithValue
+                ("@NewCity", newCustomer.City);
+            updateCommand.Parameters.AddWithValue
+                ("@NewState", newCustomer.State);
+            updateCommand.Parameters.AddWithValue
+                ("@NewZipCode", newCustomer.ZipCode);
+            updateCommand.Parameters.AddWithValue
+                ("@OldCustomerID", oldCustomer.CustomerID);
+            updateCommand.Parameters.AddWithValue
+                ("@OldName", oldCustomer.Name);
+            updateCommand.Parameters.AddWithValue
+                ("@OldAddress", oldCustomer.Address);
+            updateCommand.Parameters.AddWithValue
+                ("@OldCity", oldCustomer.City);
+            updateCommand.Parameters.AddWithValue
+                ("@OldState", oldCustomer.State);
+            updateCommand.Parameters.AddWithValue
+                ("@OldZipCode", oldCustomer.ZipCode);
             try
             {
                 // open the connection
                 connection.Open();
                 // execute the command
-                MySqlDataReader reader = updateCommand.ExecuteReader();
-                // if the number of records returned = 1, return true otherwise return false
-                if (reader.HasRows)
-                {
-                    updateCommand.ExecuteNonQuery();
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+                int rowsAffected = updateCommand.ExecuteNonQuery();
+                return rowsAffected > 0;
             }
             catch (MySqlException ex)
             {

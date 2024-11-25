@@ -31,39 +31,43 @@ namespace MMABooksTests
             p.ProductCode = "ABC1";
             p.Description = "testing product";
             p.UnitPrice = 12.34m;
-            p.OnHandQuantity = 1234;
+            p.OnHandQuantity = 5678;
 
-            string productCode = ProductDB.AddProduct(p);
-            p = ProductDB.GetProduct(productCode);
+            Product p2 = ProductDB.AddProduct(p);
             Assert.AreEqual("ABC1", p.ProductCode);
+            Assert.AreEqual("testing product", p.Description);
+            Assert.AreEqual(12.34m, p.UnitPrice);
+            Assert.AreEqual(5678, p.OnHandQuantity);
         }
 
         [Test]
-        public void TestUpdateProduct() //TODO: update copied method to UPDATE
+        public void TestUpdateProduct()
         {
-            Product p = new Product();
-            p.ProductCode = "ABC1";
-            p.Description = "testing product";
-            p.UnitPrice = 12.34m;
-            p.OnHandQuantity = 1234;
+            //Arrange
+            Product oldProduct = new Product();
+            oldProduct.ProductCode = "A4CS";
+            oldProduct.Description = "Murach's ASP.NET 4 Web Programming with C# 2010";
+            oldProduct.UnitPrice = 56.5000m;
+            oldProduct.OnHandQuantity = 4637;
 
-            string productCode = ProductDB.AddProduct(p);
-            p = ProductDB.GetProduct(productCode);
-            Assert.AreEqual("ABC1", p.ProductCode);
+            Product newProduct = new Product();
+            newProduct.ProductCode = "XYZ9";
+            newProduct.Description = "test update product";
+            newProduct.UnitPrice = 43.21m;
+            newProduct.OnHandQuantity = 1234;
+
+            //Act
+            bool result = ProductDB.UpdateProduct(oldProduct, newProduct);
+
+
+            //Assert
+            Assert.IsTrue(result);
         }
-
+        
         [Test]
         public void TestDeleteProduct()
         {
-            Product p = new Product();
-            p.ProductCode = "ABC1";
-            p.Description = "testing product";
-            p.UnitPrice = 12.34m;
-            p.OnHandQuantity = 1234;
-
-            string productCode = ProductDB.AddProduct(p);
-            p = ProductDB.GetProduct(productCode);
-            Assert.AreEqual("ABC1", p.ProductCode);
+            //TODO: Write unit test for DeleteProduct()
         }
     }
 }

@@ -52,7 +52,7 @@ namespace MMABooksDBClasses
             }
         }
 
-        public static string AddProduct(Product product)
+        public static Product AddProduct(Product product)
         {
             MySqlConnection connection = MMABooksDB.GetConnection();
             string insertStatement =
@@ -72,14 +72,30 @@ namespace MMABooksDBClasses
             try
             {
                 connection.Open();
-                insertCommand.ExecuteNonQuery();
-                // MySQL specific code for getting last pk value
-                string selectStatement =
-                    "SELECT LAST_INSERT_ID()"; //THIS ALWAYS RETURNS 0, I DONT KNOW WHAT TO DO!
+                string selectStatement
+                = "SELECT ProductCode, Description, OnHandQuantity, UnitPrice "
+                + "FROM Products "
+                + "WHERE ProductCode = @ProductCode";
                 MySqlCommand selectCommand =
                     new MySqlCommand(selectStatement, connection);
-                object productCode = selectCommand.ExecuteScalar();
-                return productCode.ToString();
+                selectCommand.Parameters.AddWithValue("@ProductCode", product.ProductCode);
+                MySqlDataReader custReader =
+                    selectCommand.ExecuteReader(CommandBehavior.SingleRow);
+                if (custReader.Read())
+                {
+                    Product p = new Product();
+                    p.ProductCode = custReader["ProductCode"].ToString();
+                    p.Description = custReader["Description"].ToString();
+                    p.OnHandQuantity = (int)custReader["OnHandQuantity"];
+                    p.UnitPrice = (decimal)custReader["UnitPrice"];
+
+                    custReader.Close();
+                    return p;
+                }
+                else
+                {
+                    return null;
+                }
             }
             catch (MySqlException ex)
             {
@@ -133,23 +149,36 @@ namespace MMABooksDBClasses
             }
         }
 
-        public static bool UpdateProduct(Product oldProduct,
-            Product newProduct)
+        public static bool UpdateProduct(Product oldProduct, Product newProduct)
         {
             // create a connection
             MySqlConnection connection = MMABooksDB.GetConnection();
             string updateStatement =
                 "UPDATE Products SET " +
                 "Description = @NewDescription, " +
-                "OnHandQuantity = @NewOnHandQuantity, " +
                 "UnitPrice = @NewUnitPrice, " +
+                "OnHandQuantity = @NewOnHandQuantity, " +
                 "WHERE ProductCode = @OldProductCode " +
                 "AND Description = @OldDescription " +
-                "AND OnHandQuantity = @OldOnHandQuantity " +
-                "AND UnitPrice = @OldUnitPrice ";
+                "AND UnitPrice = @OldUnitPrice " +
+                "AND OnHandQuantity = @OldOnHandQuantity ";
             // setup the command object
             MySqlCommand updateCommand =
                 new MySqlCommand(updateStatement, connection);
+            updateCommand.Parameters.AddWithValue
+                ("@NewDescription", newProduct.Description);
+            updateCommand.Parameters.AddWithValue
+                ("@NewUnitPrice", newProduct.UnitPrice);
+            updateCommand.Parameters.AddWithValue
+                ("@NewOnHandQuantity", newProduct.OnHandQuantity);
+            updateCommand.Parameters.AddWithValue
+                ("@OldProductCode", newProduct.ProductCode);
+            updateCommand.Parameters.AddWithValue
+                ("@OldDescription", newProduct.Description);
+            updateCommand.Parameters.AddWithValue
+                ("@OldUnitPrice", newProduct.UnitPrice);
+            updateCommand.Parameters.AddWithValue
+                ("@OldOnHandQuantity", newProduct.OnHandQuantity);
             try
             {
                 // open the connection
